@@ -4,12 +4,10 @@ if (( $EUID != 0 )); then
   exit 1
 fi
 echo
-echo
-echo " W   W   W || / I &   &   666  %%%%"
-echo "  W W W W  ||/  I &   &   66   & %"
-echo "   W   W   ||\  I &&& &&& 6666 &  %"
-echo
-echo
+echo "_ _ _ _  _ _ _    _    ____ ____ "
+echo "| | | |_/  | |    |    |___ |__/ "
+echo "|_|_| | \_ | |___ |___ |___ |  \ "
+echo "                                 "
 airmon-ng check kill; airmon-ng check; sudo iwconfig | grep wlan
 echo -n "qual é a placa de rede? "
 read wlan
